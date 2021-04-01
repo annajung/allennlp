@@ -8,13 +8,13 @@ import logging
 import warnings
 
 import torch.distributed as dist
-from allennlp.data.fields import TextField, MultiLabelField, LabelField
+from allennlp.data.fields import TextField, MultiLabelField, LabelField, SequenceLabelField, SequenceField
 
 from allennlp.data.instance import Instance
 from allennlp.common import util
 from allennlp.common.registrable import Registrable
 from datasets import load_dataset
-from datasets.features import ClassLabel
+from datasets.features import ClassLabel, Translation, Sequence
 from datasets.features import Value
 
 logger = logging.getLogger(__name__)
@@ -95,6 +95,19 @@ class HuggingfaceDatasetSplitReader(DatasetReader):
                     field = LabelField(inputs[0][feature], skip_indexing=True)
                 else:
                     field = LabelField(inputs[0][feature], skip_indexing=True)
+
+            elif isinstance(value, Translation):
+                if value.dtype == 'dict':
+                    # todo
+                    print("todo")
+
+            elif isinstance(value, Sequence):
+                if value.dtype == 'list':
+                    if value.feature.dtype == 'string':
+                        # todo
+                        print("todo")
+                        field = SequenceLabelField(inputs[0][feature])
+
             fields[feature] = field
 
         return Instance(fields)
